@@ -31,23 +31,18 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util.js';
     /**************************************************************************** */
 
   //! END @TODO1
-  app.get("/filteredimage", async (req, res) => {
-    //const requestValidation = validationResult(req);
+  app.get("/filteredimage", query('image_url').notEmpty(),async (req, res) => {
+    const requestValidation = validationResult(req);
 
-    /*if(requestValidation.errors.length > 0) {
-      return res.status(400).send('Problems with the request: ${requestValidation.errors[0].msg} ');
-    }*/
+    if(requestValidation.errors.length > 0) {
+      return res.status(400).send('Invalid Request: image_url should not be empty');
+    }
 
-    /*filterImageFromURL(req.query.image_url).then((filteredImage) => {
-      console.log(filteredImage);
-      return res.send(200).sendFile(filteredImage, () => { 
+    filterImageFromURL(req.query.image_url).then((filteredImage) => {
+      res.status(200).sendFile(filteredImage, () => { 
         deleteLocalFiles([filteredImage]);
       }); 
-    }).catch((error) => res.status(500).send(error));*/
-    const abcd = await filterImageFromURL(req.query.image_url);
-   // console.log("asdsd" + abcd);
-    res.status(200).sendFile(abcd);
-    deleteLocalFiles([abcd]);
+    }).catch((error) => res.status(500).send(error));
   });
   
   // Root Endpoint
